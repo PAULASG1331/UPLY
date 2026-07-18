@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>uply - Student Dashboard</title>
+  
+  <!-- Carga de React, ReactDOM y Babel desde CDN estables -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'system-ui', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #CBD5E1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #0A2540;
+    }
+
+    #root {
+      width: 100vw;
+      height: 100vh;
+      max-width: 1440px;
+      max-height: 900px;
+      background-color: #F4F6F9;
+      display: flex;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    /* Scrollbar estilizado */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CCD1D9;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 1024px) {
+      #root {
+        max-height: 100vh;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // Paleta de colores unificada en JavaScript para evitar conflictos
+    const PALETA = {
+      bgMain: '#F4F6F9',
+      sidebarBg: '#FFFFFF',
+      primary: '#0052CC',
+      primaryLight: '#E6F0FF',
+      dark: '#0A2540',
+      green: '#00D4B2',
+      success: '#2ECC71',
+      textGray: '#666666',
+      borderColor: '#E4E8EF',
+      shadow: '0 4px 12px rgba(10, 37, 64, 0.05)'
+    };
+
+    const INITIAL_HOMEWORK = [
+      { id: 1, title: 'Inecuaciones racionales. Evaluación #5', deadline: '30 Mar, 2026', status: 'todo' },
+      { id: 2, title: 'Todo sobre la célula y Homeostasis. Quiz', deadline: '29 Mar, 2026', status: 'todo' },
+      { id: 3, title: 'Formas y Estructuras Moleculares', deadline: '03 Apr, 2026', status: 'todo' },
+      { id: 4, title: 'Crónicas Históricas: Explorando el pasado', deadline: '30 Mar, 2026', status: 'review' },
+      { id: 5, title: 'Física Fantasma: Leyes de la naturaleza', deadline: '25 Mar, 2026', status: 'completed' },
+      { id: 6, title: 'Paisajes del Lenguaje: Vocabulario técnico', deadline: '24 Mar, 2026', status: 'completed' }
+    ];
+
+    const EVENTS = [
+      { id: 1, title: 'Acento y Fonética Inglesa', date: '18 Apr, 2026 - 12:00', image: '🇺🇸', teacher: 'Prof. Ana Martínez', active: true },
+      { id: 2, title: 'RoboFest 2026 - Prep', date: '20 May, 2026 - 15:00', image: '🤖', teacher: 'Ing. Marcos Lima', active: false },
+      { id: 3, title: 'Introducción a la IA Avanzada', date: '09 Jun, 2026 - 09:30', image: '🧠', teacher: 'Dr. Elena Gómez', active: false }
+    ];
+
+    function App() {
+      const [currentTab, setCurrentTab] = useState('home');
+      const [homeworkList, setHomeworkList] = useState(INITIAL_HOMEWORK);
+      const [searchQuery, setSearchQuery] = useState('');
+      const [selectedCall, setSelectedCall] = useState(null);
+
+      const toggleHomeworkStatus = (id) => {
+        setHomeworkList(homeworkList.map(item => {
+          if (item.id === id) {
+            const nextStatus = item.status === 'todo' ? 'review' : item.status === 'review' ? 'completed' : 'todo';
+            return { ...item, status: nextStatus };
+          }
+          return item;
+        }));
+      };
+
+      return (
+        <div style={styles.appLayout}>
+          
+          {/* MENU LATERAL */}
+          <aside style={styles.sidebar}>
+            <div>
+              <div style={styles.logoContainer}>
+                <div style={styles.logoIcon}>🎓</div>
+                <span style={styles.logoText}>uply</span>
+              </div>
+
+              <nav style={styles.navMenu}>
+                <button onClick={() => setCurrentTab('home')} style={{...styles.navButton, ...(currentTab === 'home' ? styles.navButtonActive : {})}}>
+                  <span style={styles.navIcon}>🏠</span> Inicio
+                </button>
+                <button onClick={() => setCurrentTab('lessons')} style={{...styles.navButton, ...(currentTab === 'lessons' ? styles.navButtonActive : {})}}>
+                  <span style={styles.navIcon}>📚</span> Clases y Tutores
+                </button>
+                <button onClick={() => setCurrentTab('timetable')} style={{...styles.navButton, ...(currentTab === 'timetable' ? styles.navButtonActive : {})}}>
+                  <span style={styles.navIcon}>📅</span> Horario
+                </button>
+                <button onClick={() => setCurrentTab('homework')} style={{...styles.navButton, ...(currentTab === 'homework' ? styles.navButtonActive : {})}}>
+                  <span style={styles.navIcon}>📝</span> Tareas
+                </button>
+              </nav>
+            </div>
+
+            <div style={styles.sidebarFooter}>
+              <button style={styles.navButton} onClick={() => alert('Soporte uply activo 24/7')}>
+                <span style={styles.navIcon}>🛡️</span> Soporte
+              </button>
+              <button style={styles.navButton} onClick={() => alert('Configuración de cuenta segura')}>
+                <span style={styles.navIcon}>⚙️</span> Ajustes
+              </button>
+            </div>
+          </aside>
+
+          {/* CONTENEDOR CENTRAL */}
+          <div style={styles.mainWrapper}>
+            
+            <header style={styles.topHeader}>
+              <div style={styles.searchBarContainer}>
+                <span style={{marginRight: '8px'}}>🔍</span>
+                <input 
+                  type="text" 
+                  placeholder="Buscar clases..." 
+                  style={styles.searchInput}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <div style={styles.profileContainer}>
+                <div style={styles.notificationBell} onClick={() => alert('No tienes notificaciones')}>🔔</div>
+                <div style={styles.profileInfo}>
+                  <div style={styles.avatar}>JS</div>
+                  <div>
+                    <div style={styles.profileName}>James Sofia</div>
+                    <div style={styles.profileRole}>Estudiante uply</div>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <div style={styles.dashboardGrid}>
+              
+              <div style={styles.leftColumn}>
+                
+                {/* BANNER BIENVENIDA */}
+                <div style={styles.welcomeBanner}>
+                  <div style={styles.welcomeTextContainer}>
+                    <h1 style={styles.welcomeTitle}>¡Hola de nuevo, James! 👋</h1>
+                    <p style={styles.welcomeSubtitle}>Has completado el 70% de tus objetivos de aprendizaje esta semana. ¡Sigue así!</p>
+                  </div>
+                  <div style={styles.mascotGraphics}>
+                    <div style={styles.mascotEyes}>👁️👁️</div>
+                    <div style={styles.mascotBadge}>uply AI</div>
+                  </div>
+                </div>
+
+                {/* FILA DE ESTADÍSTICAS */}
+                <div style={styles.statsRow}>
+                  <div style={styles.statCard}>
+                    <div style={{fontSize: '24px'}}>📈</div>
+                    <div>
+                      <div style={styles.statLabel}>Asistencia Global</div>
+                      <div style={styles.statValue}>19 / 20</div>
+                    </div>
+                  </div>
+                  <div style={styles.statCard}>
+                    <div style={{fontSize: '24px'}}>🎯</div>
+                    <div>
+                      <div style={styles.statLabel}>Progreso Tareas</div>
+                      <div style={styles.statValue}>53 / 56</div>
+                    </div>
+                  </div>
+                  <div style={styles.statCard}>
+                    <div style={{fontSize: '24px'}}>⭐</div>
+                    <div>
+                      <div style={styles.statLabel}>Calificación Promedio</div>
+                      <div style={styles.statValue}>89 / 100</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SECCIÓN HORARIO Y EVENTOS */}
+                <div style={styles.innerSectionGrid}>
+                  
+                  <div style={styles.cardContainer}>
+                    <div style={styles.cardHeader}>
+                      <h3 style={styles.cardTitle}>📅 Horario Semanal</h3>
+                    </div>
+                    <div style={styles.daysRow}>
+                      {['Lun 13', 'Mar 14', 'Mie 15', 'Jue 16', 'Vie 17'].map((day, idx) => (
+                        <div key={idx} style={{...styles.dayBadge, ...(idx === 4 ? styles.dayBadgeActive : {})}}>
+                          {day}
+                        </div>
+                      ))}
+                    </div>
+                    <div style={styles.timetableList}>
+                      <div style={styles.timetableItem}>
+                        <div style={styles.timeLabel}>08:00 - 09:30</div>
+                        <div style={{...styles.lessonIndicator, backgroundColor: '#E6F0FF', borderLeft: `4px solid ${PALETA.primary}`}}>
+                          <div style={{fontWeight: 'bold', fontSize: '13px'}}>Álgebra y Estructuras</div>
+                          <div style={{fontSize: '11px', color: PALETA.textGray}}>Prof. Ana Martínez</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={styles.cardContainer}>
+                    <div style={styles.cardHeader}>
+                      <h3 style={styles.cardTitle}>🎥 Clases en Vivo</h3>
+                    </div>
+                    <div style={styles.eventsList}>
+                      {EVENTS.map(event => (
+                        <div key={event.id} style={styles.eventItem}>
+                          <div style={styles.eventEmoji}>{event.image}</div>
+                          <div style={{flex: 1}}>
+                            <div style={{fontWeight: 'bold', fontSize: '13px'}}>{event.title}</div>
+                            <div style={{fontSize: '11px', color: PALETA.textGray}}>{event.teacher}</div>
+                          </div>
+                          <button 
+                            style={{...styles.btnJoinEvent, ...(event.active ? styles.btnJoinEventActive : {})}}
+                            onClick={() => setSelectedCall(event)}
+                          >
+                            {event.active ? 'Conectarse' : 'Agendado'}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* COLUMNA DERECHA */}
+              <aside style={styles.rightColumn}>
+                <h3 style={{...styles.cardTitle, marginBottom: '16px'}}>📊 Estado de Entregas</h3>
+                
+                <div style={styles.homeworkSection}>
+                  <div style={styles.sectionHeaderLabel}>POR HACER</div>
+                  {homeworkList.filter(h => h.status === 'todo').map(item => (
+                    <div key={item.id} style={styles.homeworkItemCard} onClick={() => toggleHomeworkStatus(item.id)}>
+                      <div style={styles.checkboxTodo}></div>
+                      <div style={{flex: 1}}>
+                        <div style={styles.homeworkItemTitle}>{item.title}</div>
+                        <div style={styles.homeworkItemDeadline}>⏳ Límite: {item.deadline}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={styles.homeworkSection}>
+                  <div style={{...styles.sectionHeaderLabel, color: '#E67E22'}}>EN REVISIÓN</div>
+                  {homeworkList.filter(h => h.status === 'review').map(item => (
+                    <div key={item.id} style={{...styles.homeworkItemCard, borderLeft: '4px solid #E67E22'}} onClick={() => toggleHomeworkStatus(item.id)}>
+                      <div style={styles.checkboxReview}></div>
+                      <div style={{flex: 1}}>
+                        <div style={styles.homeworkItemTitle}>{item.title}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={styles.homeworkSection}>
+                  <div style={{...styles.sectionHeaderLabel, color: PALETA.success}}>COMPLETADAS</div>
+                  {homeworkList.filter(h => h.status === 'completed').map(item => (
+                    <div key={item.id} style={{...styles.homeworkItemCard, opacity: 0.75, backgroundColor: '#F8FAFC'}} onClick={() => toggleHomeworkStatus(item.id)}>
+                      <div style={styles.checkboxCompleted}>✓</div>
+                      <div style={{flex: 1}}>
+                        <div style={{...styles.homeworkItemTitle, textDecoration: 'line-through'}}>{item.title}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </aside>
+
+            </div>
+
+          </div>
+
+          {/* SIMULADOR CLASE EN VIVO */}
+          {selectedCall && (
+            <div style={styles.modalCallOverlay}>
+              <div style={styles.modalCallContainer}>
+                <div style={styles.videoStreamContainer}>
+                  <div style={styles.teacherPlaceholderVideo}>
+                    <span style={{fontSize: '48px'}}>{selectedCall.image}</span>
+                    <h2 style={{color: '#fff', marginTop: '12px'}}>{selectedCall.teacher}</h2>
+                    <p style={{color: '#E4E8EF', fontSize: '14px'}}>Clase activa en uply</p>
+                  </div>
+                  <div style={styles.studentFloatingVideo}>
+                    <div style={styles.miniAvatar}>Tú</div>
+                  </div>
+                </div>
+                <div style={styles.callControlsRow}>
+                  <button style={styles.controlBtn} onClick={() => alert('Micrófono configurado')}>Silenciar</button>
+                  <button style={styles.controlBtn} onClick={() => alert('Cámara configurada')}>Cámara</button>
+                  <button style={{...styles.controlBtn, backgroundColor: '#E74C3C'}} onClick={() => setSelectedCall(null)}>Salir de Clase</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    const styles = {
+      appLayout: { display: 'flex', width: '100%', height: '100%', backgroundColor: PALETA.bgMain },
+      sidebar: { width: '260px', backgroundColor: PALETA.sidebarBg, borderRight: `1px solid ${PALETA.borderColor}`, display: 'flex', flexDirection: 'column', padding: '24px 16px', justifyContent: 'space-between' },
+      logoContainer: { display: 'flex', alignItems: 'center', gap: '12px', paddingLeft: '8px', marginBottom: '32px' },
+      logoIcon: { fontSize: '28px', background: PALETA.primaryLight, padding: '6px', borderRadius: '12px' },
+      logoText: { fontSize: '22px', fontWeight: 'bold', color: PALETA.dark, letterSpacing: '-0.5px' },
+      navMenu: { display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 },
+      navButton: { display: 'flex', alignItems: 'center', width: '100%', padding: '12px 16px', border: 'none', borderRadius: '12px', backgroundColor: 'transparent', color: PALETA.textGray, fontSize: '14px', fontWeight: '600', cursor: 'pointer', textAlign: 'left' },
+      navButtonActive: { backgroundColor: PALETA.primary, color: '#FFFFFF' },
+      navIcon: { marginRight: '12px', fontSize: '16px' },
+      sidebarFooter: { display: 'flex', flexDirection: 'column', gap: '4px', borderTop: `1px solid ${PALETA.borderColor}`, paddingTop: '16px' },
+      mainWrapper: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' },
+      topHeader: { height: '70px', backgroundColor: '#FFFFFF', borderBottom: `1px solid ${PALETA.borderColor}`, display: 'flex', alignItems: 'center', justifyBox: 'space-between', justifyContent: 'space-between', padding: '0 24px' },
+      searchBarContainer: { display: 'flex', alignItems: 'center', backgroundColor: PALETA.bgMain, padding: '8px 16px', borderRadius: '12px', width: '320px' },
+      searchInput: { border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '13px' },
+      profileContainer: { display: 'flex', alignItems: 'center', gap: '20px' },
+      notificationBell: { fontSize: '18px', cursor: 'pointer' },
+      profileInfo: { display: 'flex', alignItems: 'center', gap: '10px' },
+      avatar: { width: '36px', height: '36px', borderRadius: '50%', backgroundColor: PALETA.green, color: PALETA.dark, fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '13px' },
+      profileName: { fontSize: '13px', fontWeight: 'bold' },
+      profileRole: { fontSize: '11px', color: PALETA.textGray },
+      dashboardGrid: { flex: 1, display: 'flex', padding: '24px', gap: '24px', overflowY: 'auto' },
+      leftColumn: { flex: 2, display: 'flex', flexDirection: 'column', gap: '24px' },
+      rightColumn: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: '20px', padding: '20px', boxShadow: PALETA.shadow, overflowY: 'auto', maxHeight: 'calc(100vh - 140px)' },
+      welcomeBanner: { backgroundColor: PALETA.primary, borderRadius: '20px', padding: '24px', color: '#FFFFFF', display: 'flex', justifyContent: 'space-between', alignItems: 'center', overflow: 'hidden' },
+      welcomeTextContainer: { maxWidth: '70%' },
+      welcomeTitle: { fontSize: '22px', marginBottom: '8px' },
+      welcomeSubtitle: { fontSize: '13px', opacity: 0.9, lineHeight: '1.5' },
+      mascotGraphics: { width: '80px', height: '80px', backgroundColor: PALETA.green, borderRadius: '50%', display: 'flex', flexDirection: 'column', justifyBox: 'center', justifyContent: 'center', alignItems: 'center' },
+      mascotEyes: { fontSize: '20px', letterSpacing: '2px' },
+      mascotBadge: { fontSize: '9px', backgroundColor: PALETA.dark, color: '#fff', padding: '2px 6px', borderRadius: '6px', marginTop: '4px', fontWeight: 'bold' },
+      statsRow: { display: 'flex', gap: '16px' },
+      statCard: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: PALETA.shadow },
+      statLabel: { fontSize: '11px', color: PALETA.textGray, marginBottom: '4px' },
+      statValue: { fontSize: '16px', fontWeight: 'bold' },
+      innerSectionGrid: { display: 'flex', gap: '24px' },
+      cardContainer: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: '20px', padding: '20px', boxShadow: PALETA.shadow, display: 'flex', flexDirection: 'column', gap: '16px' },
+      cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+      cardTitle: { fontSize: '15px', fontWeight: 'bold', color: PALETA.dark },
+      daysRow: { display: 'flex', gap: '6px', justifyContent: 'space-between' },
+      dayBadge: { padding: '6px 10px', borderRadius: '8px', backgroundColor: PALETA.bgMain, fontSize: '11px', textAlign: 'center', fontWeight: '500' },
+      dayBadgeActive: { backgroundColor: PALETA.primary, color: '#FFFFFF' },
+      timetableList: { display: 'flex', flexDirection: 'column', gap: '12px' },
+      timetableItem: { display: 'flex', alignItems: 'center', gap: '12px' },
+      timeLabel: { fontSize: '11px', fontWeight: 'bold', color: PALETA.textGray, width: '75px' },
+      lessonIndicator: { flex: 1, padding: '10px', borderRadius: '8px' },
+      eventsList: { display: 'flex', flexDirection: 'column', gap: '12px' },
+      eventItem: { display: 'flex', alignItems: 'center', gap: '10px', borderBottom: `1px solid ${PALETA.borderColor}`, paddingBottom: '12px' },
+      eventEmoji: { fontSize: '22px', backgroundColor: PALETA.bgMain, padding: '6px', borderRadius: '10px' },
+      btnJoinEvent: { padding: '6px 12px', borderRadius: '8px', border: `1px solid ${PALETA.borderColor}`, backgroundColor: '#F8FAFC', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' },
+      btnJoinEventActive: { backgroundColor: PALETA.green, color: PALETA.dark, border: 'none' },
+      homeworkSection: { marginBottom: '20px' },
+      sectionHeaderLabel: { fontSize: '11px', fontWeight: 'bold', color: PALETA.textGray, letterSpacing: '0.5px', marginBottom: '10px' },
+      homeworkItemCard: { display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: PALETA.bgMain, padding: '12px', borderRadius: '12px', marginBottom: '8px', cursor: 'pointer' },
+      homeworkItemTitle: { fontSize: '13px', fontWeight: '600', lineHeight: '1.4' },
+      homeworkItemDeadline: { fontSize: '11px', color: PALETA.textGray, marginTop: '2px' },
+      checkboxTodo: { width: '18px', height: '18px', borderRadius: '50%', border: `2px solid ${PALETA.primary}`, backgroundColor: '#fff' },
+      checkboxReview: { width: '18px', height: '18px', borderRadius: '50%', border: '2px solid #E67E22', backgroundColor: '#fff' },
+      checkboxCompleted: { width: '18px', height: '18px', borderRadius: '50%', backgroundColor: PALETA.success, color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '10px', fontWeight: 'bold' },
+      modalCallOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(10, 37, 64, 0.9)', zIndex: 3000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '40px' },
+      modalCallContainer: { width: '100%', maxWidth: '900px', height: '100%', maxHeight: '600px', backgroundColor: '#1C2833', borderRadius: '24px', overflow: 'hidden', display: 'flex', flexDirection: 'column' },
+      videoStreamContainer: { flex: 1, position: 'relative', backgroundColor: '#111', display: 'flex', justifyContent: 'center', alignItems: 'center' },
+      teacherPlaceholderVideo: { textAlign: 'center' },
+      studentFloatingVideo: { position: 'absolute', bottom: '20px', right: '20px', width: '160px', height: '100px', backgroundColor: '#2C3E50', borderRadius: '12px', border: '2px solid #fff', display: 'flex', justifyContent: 'center', alignItems: 'center' },
+      miniAvatar: { color: '#fff', fontSize: '12px', fontWeight: 'bold' },
+      callControlsRow: { height: '80px', backgroundColor: '#1C2833', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' },
+      controlBtn: { padding: '10px 20px', borderRadius: '12px', border: 'none', backgroundColor: '#2C3E50', color: '#fff', fontWeight: 'bold', cursor: 'pointer', fontSize: '13px' }
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
