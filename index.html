@@ -1,417 +1,1007 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>uply - Student Dashboard</title>
-  
-  <!-- Carga de React, ReactDOM y Babel desde CDN estables -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uply - Plataforma de Apoyo Académico y Tutorías</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --primary-blue: #2563eb;
+            --accent-green: #10b981;
+            --bg-light: #f8fafc;
+            --bg-white: #ffffff;
+            --text-dark: #0f172a;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.625rem;
+            --radius-lg: 1rem;
+            --radius-full: 9999px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        body.dark-theme {
+            --bg-light: #0f172a;
+            --bg-white: #1e293b;
+            --text-dark: #f8fafc;
+            --text-light: #94a3b8;
+            --border-color: #334155;
+            --primary-dark: #f8fafc;
+        }
 
-    body {
-      font-family: 'system-ui', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #CBD5E1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: #0A2540;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+        }
 
-    #root {
-      width: 100vw;
-      height: 100vh;
-      max-width: 1440px;
-      max-height: 900px;
-      background-color: #F4F6F9;
-      display: flex;
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    }
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-    /* Scrollbar estilizado */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #CCD1D9;
-      border-radius: 10px;
-    }
+        h1, h2, h3, h4, h5, h6 { color: var(--primary-dark); font-weight: 700; margin-bottom: 0.5rem;}
+        p { color: var(--text-light); line-height: 1.6; }
+        button, input, select, textarea { font-family: inherit; }
 
-    @media (max-width: 1024px) {
-      #root {
-        max-height: 100vh;
-        border-radius: 0;
-      }
-    }
-  </style>
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.625rem 1.25rem; border-radius: var(--radius-md);
+            font-weight: 600; font-size: 0.875rem; cursor: pointer;
+            border: 1px solid transparent; transition: var(--transition); gap: 0.5rem;
+        }
+        .btn-primary { background: var(--primary-blue); color: white; }
+        .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        .btn-success { background: var(--accent-green); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-outline { border-color: var(--border-color); background: transparent; color: var(--text-dark); }
+        .btn-outline:hover { background: var(--bg-light); border-color: var(--text-light); }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-warning:hover { background: #d97706; }
+        .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.75rem; }
+
+        .card {
+            background: var(--bg-white); border-radius: var(--radius-lg);
+            padding: 1.5rem; box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color); transition: var(--transition);
+        }
+        .card:hover { box-shadow: var(--shadow-md); }
+
+        .grid { display: grid; gap: 1.25rem; }
+        .grid-cols-1 { grid-template-columns: 1fr; }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .w-full { width: 100%; }
+
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        input, select, textarea {
+            width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color);
+            border-radius: var(--radius-md); background: var(--bg-white);
+            color: var(--text-dark); margin-bottom: 1rem; outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .uply-logo { position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .logo-u { width: 26px; height: 22px; border: 4px solid var(--primary-blue); border-top: none; border-radius: 0 0 12px 12px; position: absolute; bottom: 4px; }
+        .logo-cap { position: absolute; top: 4px; width: 36px; height: 9px; background-color: var(--primary-dark); transform: skewX(-20deg); border-radius: 2px; }
+        .logo-arrow { position: absolute; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 10px solid var(--accent-green); top: -2px; z-index: 2; }
+        .brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; cursor: pointer; }
+        .brand-title { font-size: 1.5rem; font-weight: 800; color: var(--primary-dark); letter-spacing: -0.5px; }
+
+        #auth-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1e3a8a 100%);
+            display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1.5rem;
+        }
+        .auth-card { background: var(--bg-white); padding: 2.5rem; border-radius: var(--radius-lg); width: 100%; max-width: 440px; box-shadow: var(--shadow-lg); }
+        .auth-tabs { display: flex; border-bottom: 2px solid var(--border-color); margin-bottom: 1.5rem; }
+        .auth-tab { flex: 1; text-align: center; padding: 0.75rem; font-weight: 600; color: var(--text-light); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: var(--transition); }
+        .auth-tab.active { color: var(--primary-blue); border-bottom-color: var(--primary-blue); }
+
+        #app-layout { display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 260px; background: var(--bg-white); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: var(--transition); z-index: 20; }
+        .sidebar-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .nav-list { flex: 1; overflow-y: auto; padding: 1rem 0; list-style: none; }
+        .nav-item { padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.875rem; color: var(--text-light); font-weight: 500; cursor: pointer; transition: var(--transition); border-left: 4px solid transparent; }
+        .nav-item:hover, .nav-item.active { background: var(--bg-light); color: var(--primary-blue); border-left-color: var(--primary-blue); }
+        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem; }
+
+        .user-profile-mini { padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.875rem; cursor: pointer; transition: var(--transition); }
+        .user-profile-mini:hover { background: var(--bg-light); }
+        .avatar { width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--primary-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; overflow: hidden; flex-shrink: 0; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .top-header { height: 70px; background: var(--bg-white); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
+        .header-actions { display: flex; align-items: center; gap: 1rem; position: relative; }
+        
+        .notification-bell { position: relative; cursor: pointer; color: var(--text-light); font-size: 1.25rem; padding: 0.5rem; border-radius: var(--radius-full); transition: var(--transition); }
+        .notification-bell:hover { background: var(--bg-light); color: var(--primary-blue); }
+        .notification-bell .badge { position: absolute; top: 2px; right: 2px; background: #ef4444; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: var(--radius-full); font-weight: 700; }
+        
+        .notif-dropdown { position: absolute; top: 120%; right: 0; width: 340px; background: var(--bg-white); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); z-index: 100; max-height: 400px; display: flex; flex-direction: column; }
+        .notif-header { padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .notif-list { overflow-y: auto; flex: 1; max-height: 300px; }
+        .notif-item { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
+        .notif-item.unread { background: rgba(37, 99, 235, 0.05); border-left: 3px solid var(--primary-blue); }
+
+        .content-area { flex: 1; overflow-y: auto; padding: 2rem; background: var(--bg-light); }
+
+        .stat-card { display: flex; align-items: center; gap: 1.25rem; }
+        .stat-icon { width: 56px; height: 56px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+        .bg-blue-light { background: rgba(37, 99, 235, 0.12); color: var(--primary-blue); }
+        .bg-green-light { background: rgba(16, 185, 129, 0.12); color: var(--accent-green); }
+        .bg-purple-light { background: rgba(147, 51, 234, 0.12); color: #9333ea; }
+        .bg-orange-light { background: rgba(234, 88, 12, 0.12); color: #ea580c; }
+        .bg-red-light { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+
+        .chart-bar-container { height: 180px; display: flex; align-items: flex-end; gap: 1rem; padding-top: 1.5rem; border-bottom: 2px solid var(--border-color); }
+        .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+        .bar-inner { width: 100%; max-width: 40px; background: var(--primary-blue); border-radius: 4px 4px 0 0; transition: height 0.6s ease; position: relative; }
+        .bar-val { position: absolute; top: -20px; font-size: 0.75rem; font-weight: bold; width: 100%; text-align: center; }
+
+        /* Table styles for Admin/Tutor modules */
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+        .data-table th { background: var(--bg-light); padding: 0.75rem; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border-color); }
+        .data-table td { padding: 0.75rem; border-bottom: 1px solid var(--border-color); }
+        .data-table tr:hover { background: rgba(0,0,0,0.01); }
+
+        /* Calendar Styles */
+        .calendar-card { background: var(--bg-white); border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 1.5rem; }
+        .calendar-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center; }
+        .calendar-day-header { font-weight: 700; font-size: 0.85rem; padding: 0.5rem; color: var(--text-light); }
+        .calendar-day { min-height: 85px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); text-align: left; background: var(--bg-white); cursor: pointer; transition: var(--transition); display: flex; flex-direction: column; }
+        .calendar-day:hover { border-color: var(--primary-blue); background: rgba(37, 99, 235, 0.02); }
+        .calendar-day.empty { background: transparent; border-color: transparent; cursor: default; }
+        .calendar-day.today { border: 2px solid var(--primary-blue); background: rgba(37, 99, 235, 0.05); }
+        .event-pill { background: var(--primary-blue); color: white; font-size: 0.65rem; padding: 2px 4px; border-radius: 3px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Chat Styles */
+        .chat-box { display: flex; flex-direction: column; height: 520px; background: var(--bg-white); border-radius: var(--radius-lg); border: 1px solid var(--border-color); overflow: hidden; }
+        .chat-header { padding: 1rem 1.5rem; background: var(--primary-dark); color: white; display: flex; align-items: center; justify-content: space-between; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; background: var(--bg-light); }
+        .chat-bubble { max-width: 75%; padding: 0.875rem 1.125rem; border-radius: var(--radius-lg); font-size: 0.9rem; position: relative; word-break: break-word; }
+        .chat-bubble.sent { background: var(--primary-blue); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .chat-bubble.received { background: var(--bg-white); border: 1px solid var(--border-color); align-self: flex-start; border-bottom-left-radius: 2px; color: var(--text-dark); }
+        .chat-time { font-size: 0.65rem; opacity: 0.7; margin-top: 4px; text-align: right; }
+        .chat-input-bar { padding: 1rem; background: var(--bg-white); border-top: 1px solid var(--border-color); display: flex; gap: 0.5rem; align-items: center; }
+
+        /* Task & Exam list items */
+        .list-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: var(--bg-white); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.75rem; }
+        .list-item.completed { opacity: 0.6; text-decoration: line-through; border-left: 4px solid var(--accent-green); }
+
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-card { background: var(--bg-white); padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 500px; box-shadow: var(--shadow-lg); transform: translateY(15px); transition: transform 0.25s ease; }
+        .modal-overlay.active .modal-card { transform: translateY(0); }
+
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: -260px; height: 100%; box-shadow: var(--shadow-lg); }
+            .sidebar.open { left: 0; }
+            .grid-cols-2, .grid-cols-3, .grid-cols-4 { grid-template-columns: 1fr; }
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 2rem; background: white; color: black; }
+        }
+    </style>
 </head>
 <body>
 
-  <div id="root"></div>
-
-  <script type="text/babel">
-    const { useState } = React;
-
-    // Paleta de colores unificada en JavaScript para evitar conflictos
-    const PALETA = {
-      bgMain: '#F4F6F9',
-      sidebarBg: '#FFFFFF',
-      primary: '#0052CC',
-      primaryLight: '#E6F0FF',
-      dark: '#0A2540',
-      green: '#00D4B2',
-      success: '#2ECC71',
-      textGray: '#666666',
-      borderColor: '#E4E8EF',
-      shadow: '0 4px 12px rgba(10, 37, 64, 0.05)'
-    };
-
-    const INITIAL_HOMEWORK = [
-      { id: 1, title: 'Inecuaciones racionales. Evaluación #5', deadline: '30 Mar, 2026', status: 'todo' },
-      { id: 2, title: 'Todo sobre la célula y Homeostasis. Quiz', deadline: '29 Mar, 2026', status: 'todo' },
-      { id: 3, title: 'Formas y Estructuras Moleculares', deadline: '03 Apr, 2026', status: 'todo' },
-      { id: 4, title: 'Crónicas Históricas: Explorando el pasado', deadline: '30 Mar, 2026', status: 'review' },
-      { id: 5, title: 'Física Fantasma: Leyes de la naturaleza', deadline: '25 Mar, 2026', status: 'completed' },
-      { id: 6, title: 'Paisajes del Lenguaje: Vocabulario técnico', deadline: '24 Mar, 2026', status: 'completed' }
-    ];
-
-    const EVENTS = [
-      { id: 1, title: 'Acento y Fonética Inglesa', date: '18 Apr, 2026 - 12:00', image: '🇺🇸', teacher: 'Prof. Ana Martínez', active: true },
-      { id: 2, title: 'RoboFest 2026 - Prep', date: '20 May, 2026 - 15:00', image: '🤖', teacher: 'Ing. Marcos Lima', active: false },
-      { id: 3, title: 'Introducción a la IA Avanzada', date: '09 Jun, 2026 - 09:30', image: '🧠', teacher: 'Dr. Elena Gómez', active: false }
-    ];
-
-    function App() {
-      const [currentTab, setCurrentTab] = useState('home');
-      const [homeworkList, setHomeworkList] = useState(INITIAL_HOMEWORK);
-      const [searchQuery, setSearchQuery] = useState('');
-      const [selectedCall, setSelectedCall] = useState(null);
-
-      const toggleHomeworkStatus = (id) => {
-        setHomeworkList(homeworkList.map(item => {
-          if (item.id === id) {
-            const nextStatus = item.status === 'todo' ? 'review' : item.status === 'review' ? 'completed' : 'todo';
-            return { ...item, status: nextStatus };
-          }
-          return item;
-        }));
-      };
-
-      return (
-        <div style={styles.appLayout}>
-          
-          {/* MENU LATERAL */}
-          <aside style={styles.sidebar}>
-            <div>
-              <div style={styles.logoContainer}>
-                <div style={styles.logoIcon}>🎓</div>
-                <span style={styles.logoText}>uply</span>
-              </div>
-
-              <nav style={styles.navMenu}>
-                <button onClick={() => setCurrentTab('home')} style={{...styles.navButton, ...(currentTab === 'home' ? styles.navButtonActive : {})}}>
-                  <span style={styles.navIcon}>🏠</span> Inicio
-                </button>
-                <button onClick={() => setCurrentTab('lessons')} style={{...styles.navButton, ...(currentTab === 'lessons' ? styles.navButtonActive : {})}}>
-                  <span style={styles.navIcon}>📚</span> Clases y Tutores
-                </button>
-                <button onClick={() => setCurrentTab('timetable')} style={{...styles.navButton, ...(currentTab === 'timetable' ? styles.navButtonActive : {})}}>
-                  <span style={styles.navIcon}>📅</span> Horario
-                </button>
-                <button onClick={() => setCurrentTab('homework')} style={{...styles.navButton, ...(currentTab === 'homework' ? styles.navButtonActive : {})}}>
-                  <span style={styles.navIcon}>📝</span> Tareas
-                </button>
-              </nav>
+    <div id="auth-screen">
+        <div class="auth-card fade-in">
+            <div class="brand" style="justify-content: center; margin-bottom: 1.5rem;">
+                <div class="uply-logo">
+                    <div class="logo-u"></div><div class="logo-cap"></div><div class="logo-arrow"></div>
+                </div>
+                <span class="brand-title">Uply</span>
             </div>
 
-            <div style={styles.sidebarFooter}>
-              <button style={styles.navButton} onClick={() => alert('Soporte uply activo 24/7')}>
-                <span style={styles.navIcon}>🛡️</span> Soporte
-              </button>
-              <button style={styles.navButton} onClick={() => alert('Configuración de cuenta segura')}>
-                <span style={styles.navIcon}>⚙️</span> Ajustes
-              </button>
-            </div>
-          </aside>
-
-          {/* CONTENEDOR CENTRAL */}
-          <div style={styles.mainWrapper}>
-            
-            <header style={styles.topHeader}>
-              <div style={styles.searchBarContainer}>
-                <span style={{marginRight: '8px'}}>🔍</span>
-                <input 
-                  type="text" 
-                  placeholder="Buscar clases..." 
-                  style={styles.searchInput}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              <div style={styles.profileContainer}>
-                <div style={styles.notificationBell} onClick={() => alert('No tienes notificaciones')}>🔔</div>
-                <div style={styles.profileInfo}>
-                  <div style={styles.avatar}>JS</div>
-                  <div>
-                    <div style={styles.profileName}>James Sofia</div>
-                    <div style={styles.profileRole}>Estudiante uply</div>
-                  </div>
-                </div>
-              </div>
-            </header>
-
-            <div style={styles.dashboardGrid}>
-              
-              <div style={styles.leftColumn}>
-                
-                {/* BANNER BIENVENIDA */}
-                <div style={styles.welcomeBanner}>
-                  <div style={styles.welcomeTextContainer}>
-                    <h1 style={styles.welcomeTitle}>¡Hola de nuevo, James! 👋</h1>
-                    <p style={styles.welcomeSubtitle}>Has completado el 70% de tus objetivos de aprendizaje esta semana. ¡Sigue así!</p>
-                  </div>
-                  <div style={styles.mascotGraphics}>
-                    <div style={styles.mascotEyes}>👁️👁️</div>
-                    <div style={styles.mascotBadge}>uply AI</div>
-                  </div>
-                </div>
-
-                {/* FILA DE ESTADÍSTICAS */}
-                <div style={styles.statsRow}>
-                  <div style={styles.statCard}>
-                    <div style={{fontSize: '24px'}}>📈</div>
-                    <div>
-                      <div style={styles.statLabel}>Asistencia Global</div>
-                      <div style={styles.statValue}>19 / 20</div>
-                    </div>
-                  </div>
-                  <div style={styles.statCard}>
-                    <div style={{fontSize: '24px'}}>🎯</div>
-                    <div>
-                      <div style={styles.statLabel}>Progreso Tareas</div>
-                      <div style={styles.statValue}>53 / 56</div>
-                    </div>
-                  </div>
-                  <div style={styles.statCard}>
-                    <div style={{fontSize: '24px'}}>⭐</div>
-                    <div>
-                      <div style={styles.statLabel}>Calificación Promedio</div>
-                      <div style={styles.statValue}>89 / 100</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* SECCIÓN HORARIO Y EVENTOS */}
-                <div style={styles.innerSectionGrid}>
-                  
-                  <div style={styles.cardContainer}>
-                    <div style={styles.cardHeader}>
-                      <h3 style={styles.cardTitle}>📅 Horario Semanal</h3>
-                    </div>
-                    <div style={styles.daysRow}>
-                      {['Lun 13', 'Mar 14', 'Mie 15', 'Jue 16', 'Vie 17'].map((day, idx) => (
-                        <div key={idx} style={{...styles.dayBadge, ...(idx === 4 ? styles.dayBadgeActive : {})}}>
-                          {day}
-                        </div>
-                      ))}
-                    </div>
-                    <div style={styles.timetableList}>
-                      <div style={styles.timetableItem}>
-                        <div style={styles.timeLabel}>08:00 - 09:30</div>
-                        <div style={{...styles.lessonIndicator, backgroundColor: '#E6F0FF', borderLeft: `4px solid ${PALETA.primary}`}}>
-                          <div style={{fontWeight: 'bold', fontSize: '13px'}}>Álgebra y Estructuras</div>
-                          <div style={{fontSize: '11px', color: PALETA.textGray}}>Prof. Ana Martínez</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={styles.cardContainer}>
-                    <div style={styles.cardHeader}>
-                      <h3 style={styles.cardTitle}>🎥 Clases en Vivo</h3>
-                    </div>
-                    <div style={styles.eventsList}>
-                      {EVENTS.map(event => (
-                        <div key={event.id} style={styles.eventItem}>
-                          <div style={styles.eventEmoji}>{event.image}</div>
-                          <div style={{flex: 1}}>
-                            <div style={{fontWeight: 'bold', fontSize: '13px'}}>{event.title}</div>
-                            <div style={{fontSize: '11px', color: PALETA.textGray}}>{event.teacher}</div>
-                          </div>
-                          <button 
-                            style={{...styles.btnJoinEvent, ...(event.active ? styles.btnJoinEventActive : {})}}
-                            onClick={() => setSelectedCall(event)}
-                          >
-                            {event.active ? 'Conectarse' : 'Agendado'}
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-
-              {/* COLUMNA DERECHA */}
-              <aside style={styles.rightColumn}>
-                <h3 style={{...styles.cardTitle, marginBottom: '16px'}}>📊 Estado de Entregas</h3>
-                
-                <div style={styles.homeworkSection}>
-                  <div style={styles.sectionHeaderLabel}>POR HACER</div>
-                  {homeworkList.filter(h => h.status === 'todo').map(item => (
-                    <div key={item.id} style={styles.homeworkItemCard} onClick={() => toggleHomeworkStatus(item.id)}>
-                      <div style={styles.checkboxTodo}></div>
-                      <div style={{flex: 1}}>
-                        <div style={styles.homeworkItemTitle}>{item.title}</div>
-                        <div style={styles.homeworkItemDeadline}>⏳ Límite: {item.deadline}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div style={styles.homeworkSection}>
-                  <div style={{...styles.sectionHeaderLabel, color: '#E67E22'}}>EN REVISIÓN</div>
-                  {homeworkList.filter(h => h.status === 'review').map(item => (
-                    <div key={item.id} style={{...styles.homeworkItemCard, borderLeft: '4px solid #E67E22'}} onClick={() => toggleHomeworkStatus(item.id)}>
-                      <div style={styles.checkboxReview}></div>
-                      <div style={{flex: 1}}>
-                        <div style={styles.homeworkItemTitle}>{item.title}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div style={styles.homeworkSection}>
-                  <div style={{...styles.sectionHeaderLabel, color: PALETA.success}}>COMPLETADAS</div>
-                  {homeworkList.filter(h => h.status === 'completed').map(item => (
-                    <div key={item.id} style={{...styles.homeworkItemCard, opacity: 0.75, backgroundColor: '#F8FAFC'}} onClick={() => toggleHomeworkStatus(item.id)}>
-                      <div style={styles.checkboxCompleted}>✓</div>
-                      <div style={{flex: 1}}>
-                        <div style={{...styles.homeworkItemTitle, textDecoration: 'line-through'}}>{item.title}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </aside>
-
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tab-login" onclick="app.switchAuthTab('login')">Iniciar Sesión</div>
+                <div class="auth-tab" id="tab-register" onclick="app.switchAuthTab('register')">Registrarse</div>
             </div>
 
-          </div>
+            <form id="form-login">
+                <label class="text-sm font-bold block mb-1">Correo Electrónico</label>
+                <input type="email" id="login-email" placeholder="admin@uply.com / tutor@uply.com" required>
+                <label class="text-sm font-bold block mb-1">Contraseña</label>
+                <input type="password" id="login-password" placeholder="admin123 / tutor123 / alumno123" required>
+                <button type="submit" class="btn btn-primary w-full mt-2">Ingresar a Uply</button>
+            </form>
 
-          {/* SIMULADOR CLASE EN VIVO */}
-          {selectedCall && (
-            <div style={styles.modalCallOverlay}>
-              <div style={styles.modalCallContainer}>
-                <div style={styles.videoStreamContainer}>
-                  <div style={styles.teacherPlaceholderVideo}>
-                    <span style={{fontSize: '48px'}}>{selectedCall.image}</span>
-                    <h2 style={{color: '#fff', marginTop: '12px'}}>{selectedCall.teacher}</h2>
-                    <p style={{color: '#E4E8EF', fontSize: '14px'}}>Clase activa en uply</p>
-                  </div>
-                  <div style={styles.studentFloatingVideo}>
-                    <div style={styles.miniAvatar}>Tú</div>
-                  </div>
-                </div>
-                <div style={styles.callControlsRow}>
-                  <button style={styles.controlBtn} onClick={() => alert('Micrófono configurado')}>Silenciar</button>
-                  <button style={styles.controlBtn} onClick={() => alert('Cámara configurada')}>Cámara</button>
-                  <button style={{...styles.controlBtn, backgroundColor: '#E74C3C'}} onClick={() => setSelectedCall(null)}>Salir de Clase</button>
-                </div>
-              </div>
-            </div>
-          )}
-
+            <form id="form-register" class="hidden">
+                <label class="text-sm font-bold block mb-1">Nombre Completo</label>
+                <input type="text" id="reg-name" required>
+                <label class="text-sm font-bold block mb-1">Correo Electrónico</label>
+                <input type="email" id="reg-email" required>
+                <label class="text-sm font-bold block mb-1">Contraseña</label>
+                <input type="password" id="reg-password" minlength="6" required>
+                <label class="text-sm font-bold block mb-1">¿Qué rol eres? *</label>
+                <select id="reg-role" required>
+                    <option value="" disabled selected>Selecciona tu rol...</option>
+                    <option value="student">Estudiante / Padre de Familia</option>
+                    <option value="tutor">Tutor / Psicólogo Académico</option>
+                    <option value="admin">Administrador del Sistema</option>
+                </select>
+                <button type="submit" class="btn btn-success w-full mt-2">Crear Cuenta</button>
+            </form>
         </div>
-      );
-    }
+    </div>
 
-    const styles = {
-      appLayout: { display: 'flex', width: '100%', height: '100%', backgroundColor: PALETA.bgMain },
-      sidebar: { width: '260px', backgroundColor: PALETA.sidebarBg, borderRight: `1px solid ${PALETA.borderColor}`, display: 'flex', flexDirection: 'column', padding: '24px 16px', justifyContent: 'space-between' },
-      logoContainer: { display: 'flex', alignItems: 'center', gap: '12px', paddingLeft: '8px', marginBottom: '32px' },
-      logoIcon: { fontSize: '28px', background: PALETA.primaryLight, padding: '6px', borderRadius: '12px' },
-      logoText: { fontSize: '22px', fontWeight: 'bold', color: PALETA.dark, letterSpacing: '-0.5px' },
-      navMenu: { display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 },
-      navButton: { display: 'flex', alignItems: 'center', width: '100%', padding: '12px 16px', border: 'none', borderRadius: '12px', backgroundColor: 'transparent', color: PALETA.textGray, fontSize: '14px', fontWeight: '600', cursor: 'pointer', textAlign: 'left' },
-      navButtonActive: { backgroundColor: PALETA.primary, color: '#FFFFFF' },
-      navIcon: { marginRight: '12px', fontSize: '16px' },
-      sidebarFooter: { display: 'flex', flexDirection: 'column', gap: '4px', borderTop: `1px solid ${PALETA.borderColor}`, paddingTop: '16px' },
-      mainWrapper: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' },
-      topHeader: { height: '70px', backgroundColor: '#FFFFFF', borderBottom: `1px solid ${PALETA.borderColor}`, display: 'flex', alignItems: 'center', justifyBox: 'space-between', justifyContent: 'space-between', padding: '0 24px' },
-      searchBarContainer: { display: 'flex', alignItems: 'center', backgroundColor: PALETA.bgMain, padding: '8px 16px', borderRadius: '12px', width: '320px' },
-      searchInput: { border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '13px' },
-      profileContainer: { display: 'flex', alignItems: 'center', gap: '20px' },
-      notificationBell: { fontSize: '18px', cursor: 'pointer' },
-      profileInfo: { display: 'flex', alignItems: 'center', gap: '10px' },
-      avatar: { width: '36px', height: '36px', borderRadius: '50%', backgroundColor: PALETA.green, color: PALETA.dark, fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '13px' },
-      profileName: { fontSize: '13px', fontWeight: 'bold' },
-      profileRole: { fontSize: '11px', color: PALETA.textGray },
-      dashboardGrid: { flex: 1, display: 'flex', padding: '24px', gap: '24px', overflowY: 'auto' },
-      leftColumn: { flex: 2, display: 'flex', flexDirection: 'column', gap: '24px' },
-      rightColumn: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: '20px', padding: '20px', boxShadow: PALETA.shadow, overflowY: 'auto', maxHeight: 'calc(100vh - 140px)' },
-      welcomeBanner: { backgroundColor: PALETA.primary, borderRadius: '20px', padding: '24px', color: '#FFFFFF', display: 'flex', justifyContent: 'space-between', alignItems: 'center', overflow: 'hidden' },
-      welcomeTextContainer: { maxWidth: '70%' },
-      welcomeTitle: { fontSize: '22px', marginBottom: '8px' },
-      welcomeSubtitle: { fontSize: '13px', opacity: 0.9, lineHeight: '1.5' },
-      mascotGraphics: { width: '80px', height: '80px', backgroundColor: PALETA.green, borderRadius: '50%', display: 'flex', flexDirection: 'column', justifyBox: 'center', justifyContent: 'center', alignItems: 'center' },
-      mascotEyes: { fontSize: '20px', letterSpacing: '2px' },
-      mascotBadge: { fontSize: '9px', backgroundColor: PALETA.dark, color: '#fff', padding: '2px 6px', borderRadius: '6px', marginTop: '4px', fontWeight: 'bold' },
-      statsRow: { display: 'flex', gap: '16px' },
-      statCard: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: PALETA.shadow },
-      statLabel: { fontSize: '11px', color: PALETA.textGray, marginBottom: '4px' },
-      statValue: { fontSize: '16px', fontWeight: 'bold' },
-      innerSectionGrid: { display: 'flex', gap: '24px' },
-      cardContainer: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: '20px', padding: '20px', boxShadow: PALETA.shadow, display: 'flex', flexDirection: 'column', gap: '16px' },
-      cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-      cardTitle: { fontSize: '15px', fontWeight: 'bold', color: PALETA.dark },
-      daysRow: { display: 'flex', gap: '6px', justifyContent: 'space-between' },
-      dayBadge: { padding: '6px 10px', borderRadius: '8px', backgroundColor: PALETA.bgMain, fontSize: '11px', textAlign: 'center', fontWeight: '500' },
-      dayBadgeActive: { backgroundColor: PALETA.primary, color: '#FFFFFF' },
-      timetableList: { display: 'flex', flexDirection: 'column', gap: '12px' },
-      timetableItem: { display: 'flex', alignItems: 'center', gap: '12px' },
-      timeLabel: { fontSize: '11px', fontWeight: 'bold', color: PALETA.textGray, width: '75px' },
-      lessonIndicator: { flex: 1, padding: '10px', borderRadius: '8px' },
-      eventsList: { display: 'flex', flexDirection: 'column', gap: '12px' },
-      eventItem: { display: 'flex', alignItems: 'center', gap: '10px', borderBottom: `1px solid ${PALETA.borderColor}`, paddingBottom: '12px' },
-      eventEmoji: { fontSize: '22px', backgroundColor: PALETA.bgMain, padding: '6px', borderRadius: '10px' },
-      btnJoinEvent: { padding: '6px 12px', borderRadius: '8px', border: `1px solid ${PALETA.borderColor}`, backgroundColor: '#F8FAFC', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' },
-      btnJoinEventActive: { backgroundColor: PALETA.green, color: PALETA.dark, border: 'none' },
-      homeworkSection: { marginBottom: '20px' },
-      sectionHeaderLabel: { fontSize: '11px', fontWeight: 'bold', color: PALETA.textGray, letterSpacing: '0.5px', marginBottom: '10px' },
-      homeworkItemCard: { display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: PALETA.bgMain, padding: '12px', borderRadius: '12px', marginBottom: '8px', cursor: 'pointer' },
-      homeworkItemTitle: { fontSize: '13px', fontWeight: '600', lineHeight: '1.4' },
-      homeworkItemDeadline: { fontSize: '11px', color: PALETA.textGray, marginTop: '2px' },
-      checkboxTodo: { width: '18px', height: '18px', borderRadius: '50%', border: `2px solid ${PALETA.primary}`, backgroundColor: '#fff' },
-      checkboxReview: { width: '18px', height: '18px', borderRadius: '50%', border: '2px solid #E67E22', backgroundColor: '#fff' },
-      checkboxCompleted: { width: '18px', height: '18px', borderRadius: '50%', backgroundColor: PALETA.success, color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '10px', fontWeight: 'bold' },
-      modalCallOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(10, 37, 64, 0.9)', zIndex: 3000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '40px' },
-      modalCallContainer: { width: '100%', maxWidth: '900px', height: '100%', maxHeight: '600px', backgroundColor: '#1C2833', borderRadius: '24px', overflow: 'hidden', display: 'flex', flexDirection: 'column' },
-      videoStreamContainer: { flex: 1, position: 'relative', backgroundColor: '#111', display: 'flex', justifyContent: 'center', alignItems: 'center' },
-      teacherPlaceholderVideo: { textAlign: 'center' },
-      studentFloatingVideo: { position: 'absolute', bottom: '20px', right: '20px', width: '160px', height: '100px', backgroundColor: '#2C3E50', borderRadius: '12px', border: '2px solid #fff', display: 'flex', justifyContent: 'center', alignItems: 'center' },
-      miniAvatar: { color: '#fff', fontSize: '12px', fontWeight: 'bold' },
-      callControlsRow: { height: '80px', backgroundColor: '#1C2833', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' },
-      controlBtn: { padding: '10px 20px', borderRadius: '12px', border: 'none', backgroundColor: '#2C3E50', color: '#fff', fontWeight: 'bold', cursor: 'pointer', fontSize: '13px' }
-    };
+    <div id="app-layout" class="hidden">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="uply-logo">
+                        <div class="logo-u"></div><div class="logo-cap"></div><div class="logo-arrow"></div>
+                    </div>
+                    <span class="brand-title" style="font-size: 1.3rem;">Uply</span>
+                </div>
+            </div>
+            <ul class="nav-list" id="nav-list">
+                <!-- Injected dynamically by Role -->
+            </ul>
+            <div class="user-profile-mini" onclick="app.openModal('modal-profile')">
+                <div class="avatar" id="sidebar-avatar">U</div>
+                <div style="overflow: hidden;">
+                    <p id="sidebar-user-name" style="font-size: 0.875rem; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; margin: 0;"></p>
+                    <span id="sidebar-user-role" style="font-size: 0.75rem; color: var(--text-light); text-transform: capitalize;"></span>
+                </div>
+            </div>
+        </aside>
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
-  </script>
+        <main class="main-content">
+            <header class="top-header">
+                <div class="flex items-center gap-4">
+                    <button class="btn btn-outline btn-sm" onclick="app.toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <h3 id="current-view-title" style="margin: 0;">Dashboard</h3>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline btn-sm" onclick="app.toggleTheme()"><i class="fas fa-moon" id="theme-icon"></i></button>
+                    
+                    <div style="position: relative;">
+                        <div class="notification-bell" onclick="app.toggleNotifications()">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge hidden" id="notif-badge">0</span>
+                        </div>
+                        <div class="notif-dropdown hidden" id="notif-dropdown">
+                            <div class="notif-header">
+                                <strong>Notificaciones</strong>
+                                <button class="btn btn-outline btn-sm" onclick="app.clearNotifications()">Limpiar</button>
+                            </div>
+                            <div class="notif-list" id="notif-list"></div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-outline btn-sm" onclick="app.logout()"><i class="fas fa-sign-out-alt"></i> Salir</button>
+                </div>
+            </header>
+            
+            <div class="content-area" id="view-container">
+                <!-- Render Target -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Profile Edit Modal -->
+    <div class="modal-overlay" id="modal-profile">
+        <div class="modal-card">
+            <h3>Editar Perfil</h3>
+            <form id="form-edit-profile" onsubmit="app.handleSaveProfile(event)">
+                <input type="text" id="edit-name" required placeholder="Nombre">
+                <input type="email" id="edit-email" required placeholder="Correo">
+                <input type="password" id="edit-password" placeholder="Nueva contraseña (opcional)">
+                <input type="url" id="edit-avatar" placeholder="URL Foto de Perfil (Opcional)">
+                <div class="flex gap-2 mt-4">
+                    <button type="button" class="btn btn-outline w-full" onclick="app.closeModal('modal-profile')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary w-full">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div class="modal-overlay" id="modal-event">
+        <div class="modal-card">
+            <h3>Agendar Evento</h3>
+            <p id="modal-event-date-lbl" class="mb-2 text-sm text-light"></p>
+            <form onsubmit="app.handleSaveEvent(event)">
+                <input type="hidden" id="event-date-val">
+                <input type="text" id="event-title" placeholder="Título (Ej. Tutoría de Mate)" required>
+                <select id="event-type">
+                    <option value="tutoria">Tutoría</option>
+                    <option value="clase">Clase Grupal</option>
+                </select>
+                <div class="flex gap-2 mt-4">
+                    <button type="button" class="btn btn-outline w-full" onclick="app.closeModal('modal-event')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary w-full">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PIN Modal -->
+    <div class="modal-overlay" id="modal-pin">
+        <div class="modal-card text-center">
+            <h3>Control Parental</h3>
+            <p class="text-sm mb-4">Ingresa el PIN (1234)</p>
+            <input type="password" id="pin-input" maxlength="4" style="font-size: 2rem; text-align: center; letter-spacing: 0.5rem;" placeholder="••••">
+            <div class="flex gap-2 mt-2">
+                <button type="button" class="btn btn-outline w-full" onclick="app.closeModal('modal-pin')">Cancelar</button>
+                <button type="button" class="btn btn-primary w-full" onclick="app.verifyPin()">Acceder</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="print-area" class="hidden"></div>
+
+    <script>
+        const app = {
+            currentUser: null,
+            calendarDate: new Date(),
+            state: {
+                users: [], tasks: [], events: [], messages: [], notifications: [],
+                xp: 0,
+                exams: [],
+                payments: [],
+                budget: { total: 10000, spent: 2450 }
+            },
+
+            // --- INIT & MOCK DATA ---
+            init() {
+                this.loadState();
+                this.bindEvents();
+                this.checkSession();
+            },
+
+            loadState() {
+                const stored = localStorage.getItem('uply_v2_data');
+                if (stored) {
+                    this.state = JSON.parse(stored);
+                } else {
+                    this.state.users = [
+                        { id: 1, name: 'Admin Principal', email: 'admin@uply.com', password: 'admin123', role: 'admin', verified: true },
+                        { id: 2, name: 'Dra. Elena (Tutor)', email: 'tutor@uply.com', password: 'tutor123', role: 'tutor', verified: false, rating: 4.8 },
+                        { id: 3, name: 'Carlos (Alumno)', email: 'estudiante@uply.com', password: 'alumno123', role: 'student', verified: true, xp: 150 }
+                    ];
+                    this.state.tasks = [
+                        { id: 1, title: 'Leer capítulo 3', priority: 'media', completed: true, userId: 3 }
+                    ];
+                    this.state.exams = [
+                        { id: 1, title: 'Quiz de Matemáticas Básicas', subject: 'Matemáticas', creatorId: 2, questions: "1. Cuanto es 2+2?" }
+                    ];
+                    this.state.payments = [
+                        { id: 101, user: 'Carlos (Alumno)', amount: 150, date: '2023-10-15', status: 'Aprobado' },
+                        { id: 102, user: 'Padre de Familia', amount: 200, date: '2023-10-20', status: 'Pendiente' }
+                    ];
+                    this.state.events = [
+                        { id: 1, title: 'Bienvenida Uply', date: new Date().toISOString().split('T')[0], type: 'clase' }
+                    ];
+                    this.saveState();
+                }
+            },
+            
+            saveState() { 
+                try {
+                    localStorage.setItem('uply_v2_data', JSON.stringify(this.state)); 
+                } catch (e) {
+                    console.warn("Memoria llena, liberando espacio...", e);
+                    // Si el almacenamiento se llena, limpiamos los archivos adjuntos pesados
+                    if (this.state.messages) {
+                        this.state.messages = this.state.messages.map(m => {
+                            if (m.attachment) m.text += " (Archivo eliminado por falta de espacio local)";
+                            return { ...m, attachment: null };
+                        });
+                        try {
+                            localStorage.setItem('uply_v2_data', JSON.stringify(this.state));
+                            this.notify("Memoria local llena. Se limpiaron adjuntos antiguos para hacer espacio.", "warning");
+                            if (document.getElementById('chat-body')) this.renderChat(document.getElementById('view-container'));
+                        } catch (err) {
+                            this.notify("Error de almacenamiento crítico. Limpia los datos de tu navegador.", "danger");
+                        }
+                    }
+                }
+            },
+
+            // --- AUTH & ROUTING ---
+            bindEvents() {
+                document.getElementById('form-login').addEventListener('submit', e => this.login(e));
+                document.getElementById('form-register').addEventListener('submit', e => this.register(e));
+            },
+            switchAuthTab(tab) {
+                document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+                document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+                document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
+                document.getElementById('form-register').classList.toggle('hidden', tab !== 'register');
+            },
+            login(e) {
+                e.preventDefault();
+                const em = document.getElementById('login-email').value;
+                const pw = document.getElementById('login-password').value;
+                const user = this.state.users.find(u => u.email === em && u.password === pw);
+                if (user) {
+                    this.currentUser = user;
+                    localStorage.setItem('uply_session', JSON.stringify(user));
+                    this.notify("Bienvenido a Uply", "success");
+                    this.startApp();
+                } else this.notify("Credenciales inválidas", "danger");
+            },
+            register(e) {
+                e.preventDefault();
+                const user = {
+                    id: Date.now(),
+                    name: document.getElementById('reg-name').value,
+                    email: document.getElementById('reg-email').value,
+                    password: document.getElementById('reg-password').value,
+                    role: document.getElementById('reg-role').value,
+                    verified: false,
+                    xp: 0, rating: 5.0
+                };
+                if(this.state.users.some(u => u.email === user.email)) return this.notify("Correo ya registrado", "danger");
+                this.state.users.push(user);
+                this.saveState();
+                this.notify("Registro exitoso. Iniciando sesión...", "success");
+                this.switchAuthTab('login');
+                document.getElementById('login-email').value = user.email;
+                document.getElementById('login-password').value = user.password;
+            },
+            checkSession() {
+                const s = localStorage.getItem('uply_session');
+                if (s) { this.currentUser = JSON.parse(s); this.startApp(); }
+            },
+            logout() {
+                this.currentUser = null; localStorage.removeItem('uply_session');
+                document.getElementById('app-layout').classList.add('hidden');
+                document.getElementById('auth-screen').classList.remove('hidden');
+            },
+            startApp() {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-layout').classList.remove('hidden');
+                document.getElementById('sidebar-user-name').textContent = this.currentUser.name;
+                document.getElementById('sidebar-user-role').textContent = this.currentUser.role;
+                this.renderSidebar();
+                this.updateNotifBadge();
+                this.navigate('dashboard');
+            },
+
+            // --- SIDEBAR & NAVIGATION (Role-Based) ---
+            renderSidebar() {
+                const nav = document.getElementById('nav-list');
+                let items = [{ id: 'dashboard', icon: 'fas fa-chart-pie', text: 'Mi Panel' }];
+                
+                if (this.currentUser.role === 'admin') {
+                    items.push({ id: 'admin_verifications', icon: 'fas fa-id-card', text: 'Verificar Usuarios' });
+                    items.push({ id: 'admin_finances', icon: 'fas fa-wallet', text: 'Finanzas y Pagos' });
+                } else if (this.currentUser.role === 'tutor') {
+                    items.push({ id: 'calendar', icon: 'fas fa-calendar', text: 'Agenda' });
+                    items.push({ id: 'tutor_exams', icon: 'fas fa-file-signature', text: 'Mis Exámenes' });
+                    items.push({ id: 'chat', icon: 'fas fa-robot', text: 'Tutor IA (Chat)' });
+                } else { // Student
+                    items.push({ id: 'tasks', icon: 'fas fa-tasks', text: 'Mis Tareas' });
+                    items.push({ id: 'calendar', icon: 'fas fa-calendar', text: 'Calendario' });
+                    items.push({ id: 'student_exams', icon: 'fas fa-pen', text: 'Resolver Quizzes' });
+                    items.push({ id: 'chat', icon: 'fas fa-robot', text: 'Tutor IA (Chat)' });
+                    items.push({ id: 'parental', icon: 'fas fa-shield-alt', text: 'Control Parental', locked: true });
+                }
+
+                nav.innerHTML = items.map(i => `
+                    <li class="nav-item" data-id="${i.id}" onclick="app.navigate('${i.id}', ${i.locked})">
+                        <i class="${i.icon}"></i> <span>${i.text}</span> ${i.locked ? '<i class="fas fa-lock ml-auto" style="font-size:0.7rem;"></i>' : ''}
+                    </li>
+                `).join('');
+            },
+
+            navigate(viewId, isLocked = false) {
+                if (isLocked) return this.openModal('modal-pin');
+                document.querySelectorAll('.nav-item').forEach(e => e.classList.toggle('active', e.dataset.id === viewId));
+                const c = document.getElementById('view-container');
+                c.innerHTML = '';
+
+                if (viewId === 'dashboard') this.renderDashboard(c);
+                else if (viewId === 'admin_verifications') this.renderAdminVerifications(c);
+                else if (viewId === 'admin_finances') this.renderAdminFinances(c);
+                else if (viewId === 'tutor_exams') this.renderTutorExams(c);
+                else if (viewId === 'student_exams') this.renderStudentExams(c);
+                else if (viewId === 'tasks') this.renderTasks(c);
+                else if (viewId === 'calendar') this.renderCalendar(c);
+                else if (viewId === 'chat') this.renderChat(c);
+                else if (viewId === 'parental_unlocked') this.renderParental(c);
+            },
+
+            // --- ROLE-BASED DASHBOARDS ---
+            renderDashboard(c) {
+                const role = this.currentUser.role;
+                document.getElementById('current-view-title').textContent = `Panel Principal - ${role.toUpperCase()}`;
+                
+                if (role === 'admin') this.renderAdminDashboard(c);
+                else if (role === 'tutor') this.renderTutorDashboard(c);
+                else this.renderStudentDashboard(c);
+            },
+
+            renderAdminDashboard(c) {
+                const pending = this.state.users.filter(u => !u.verified).length;
+                const totalIncome = this.state.payments.reduce((acc, p) => acc + p.amount, 0);
+                const budgetPrc = Math.round((this.state.budget.spent / this.state.budget.total) * 100);
+
+                c.innerHTML = `
+                    <div class="fade-in grid grid-cols-3 mb-4">
+                        <div class="card stat-card"><div class="stat-icon bg-blue-light"><i class="fas fa-users"></i></div><div><h3>${this.state.users.length}</h3><p class="text-sm">Usuarios Totales</p></div></div>
+                        <div class="card stat-card"><div class="stat-icon bg-orange-light"><i class="fas fa-file-signature"></i></div><div><h3>${pending}</h3><p class="text-sm">Cuentas por Verificar</p></div></div>
+                        <div class="card stat-card"><div class="stat-icon bg-green-light"><i class="fas fa-dollar-sign"></i></div><div><h3>$${totalIncome}</h3><p class="text-sm">Ingresos por Pagos</p></div></div>
+                    </div>
+                    <div class="grid grid-cols-2">
+                        <div class="card">
+                            <h4>Estado del Presupuesto Operativo</h4>
+                            <div style="background: var(--bg-light); border-radius: var(--radius-full); height: 20px; margin-top: 1rem; overflow: hidden; position: relative;">
+                                <div style="width: ${budgetPrc}%; background: var(--primary-blue); height: 100%;"></div>
+                            </div>
+                            <p class="text-sm mt-2">Gastado: $${this.state.budget.spent} / Total: $${this.state.budget.total} (${budgetPrc}%)</p>
+                            <hr class="my-4" style="border-top: 1px solid var(--border-color); margin: 1rem 0;">
+                            <p class="text-sm">Fondos destinados a infraestructura, licencias de IA y mantenimiento de servidores.</p>
+                        </div>
+                        <div class="card">
+                            <h4>Acciones Rápidas</h4>
+                            <button class="btn btn-primary w-full mb-2" onclick="app.navigate('admin_verifications')">Revisar Documentos de Usuarios</button>
+                            <button class="btn btn-outline w-full" onclick="app.navigate('admin_finances')">Auditar Pagos Recientes</button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderAdminVerifications(c) {
+                document.getElementById('current-view-title').textContent = "Verificación de Cuentas y Documentos";
+                const pendingUsers = this.state.users.filter(u => !u.verified);
+                
+                c.innerHTML = `
+                    <div class="card fade-in">
+                        <p class="text-sm mb-4">Usuarios que han subido documentos y esperan aprobación para usar la plataforma.</p>
+                        <table class="data-table">
+                            <thead><tr><th>Usuario</th><th>Rol</th><th>Documento Adjunto</th><th>Acción</th></tr></thead>
+                            <tbody>
+                                ${pendingUsers.length ? pendingUsers.map(u => `
+                                    <tr>
+                                        <td><strong>${u.name}</strong><br><span style="font-size:0.75rem">${u.email}</span></td>
+                                        <td style="text-transform: capitalize;">${u.role}</td>
+                                        <td><span class="btn btn-sm btn-outline"><i class="fas fa-file-pdf"></i> ID_${u.id}.pdf</span></td>
+                                        <td><button class="btn btn-sm btn-success" onclick="app.verifyUser(${u.id})"><i class="fas fa-check"></i> Aprobar</button></td>
+                                    </tr>
+                                `).join('') : '<tr><td colspan="4" class="text-center text-sm py-4">No hay usuarios pendientes de verificación.</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            },
+            verifyUser(id) {
+                const user = this.state.users.find(u => u.id === id);
+                if(user) {
+                    user.verified = true;
+                    this.saveState();
+                    this.notify(`Usuario ${user.name} verificado y aprobado.`, "success");
+                    this.navigate('admin_verifications');
+                }
+            },
+
+            renderAdminFinances(c) {
+                document.getElementById('current-view-title').textContent = "Finanzas y Pagos";
+                c.innerHTML = `
+                    <div class="card fade-in">
+                        <table class="data-table">
+                            <thead><tr><th>ID Pago</th><th>Usuario</th><th>Fecha</th><th>Monto</th><th>Estado</th></tr></thead>
+                            <tbody>
+                                ${this.state.payments.map(p => `
+                                    <tr>
+                                        <td>#${p.id}</td><td>${p.user}</td><td>${p.date}</td><td>$${p.amount}</td>
+                                        <td><span class="btn btn-sm ${p.status === 'Aprobado' ? 'btn-success' : 'btn-warning'}">${p.status}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            },
+
+            renderTutorDashboard(c) {
+                const myExams = this.state.exams.filter(e => e.creatorId === this.currentUser.id).length;
+                c.innerHTML = `
+                    <div class="fade-in grid grid-cols-3 mb-4">
+                        <div class="card stat-card"><div class="stat-icon bg-purple-light"><i class="fas fa-star"></i></div><div><h3>${this.currentUser.rating || 5.0} / 5.0</h3><p class="text-sm">Mi Calificación</p></div></div>
+                        <div class="card stat-card"><div class="stat-icon bg-blue-light"><i class="fas fa-file-alt"></i></div><div><h3>${myExams}</h3><p class="text-sm">Exámenes Creados</p></div></div>
+                        <div class="card stat-card"><div class="stat-icon bg-green-light"><i class="fas fa-calendar-check"></i></div><div><h3>${this.state.events.length}</h3><p class="text-sm">Citas/Eventos Activos</p></div></div>
+                    </div>
+                    <div class="grid grid-cols-2">
+                        <div class="card">
+                            <h4>Estado de mi Cuenta</h4>
+                            <p class="mt-2 text-sm">
+                                ${this.currentUser.verified 
+                                    ? '<span style="color:var(--accent-green)"><i class="fas fa-check-circle"></i> Cuenta verificada y activa. Puedes impartir tutorías.</span>' 
+                                    : '<span style="color:#f59e0b"><i class="fas fa-exclamation-triangle"></i> Cuenta pendiente de verificación por Administración. Sube tus títulos.</span>'}
+                            </p>
+                        </div>
+                        <div class="card text-center">
+                            <h4>Gestión Académica</h4>
+                            <button class="btn btn-primary mt-4" onclick="app.navigate('tutor_exams')"><i class="fas fa-plus"></i> Crear Nuevo Examen / Quiz</button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderTutorExams(c) {
+                document.getElementById('current-view-title').textContent = "Creador de Exámenes";
+                const myExams = this.state.exams.filter(e => e.creatorId === this.currentUser.id);
+                
+                c.innerHTML = `
+                    <div class="fade-in grid grid-cols-2">
+                        <div class="card">
+                            <h4>Registrar Nuevo Quiz</h4>
+                            <form id="form-create-exam" onsubmit="app.createExam(event)" class="mt-4">
+                                <input type="text" id="exam-title" placeholder="Título del Examen (Ej: Parcial de Física)" required>
+                                <input type="text" id="exam-subject" placeholder="Materia" required>
+                                <textarea id="exam-questions" rows="4" placeholder="Escribe aquí las preguntas separadas por saltos de línea..." required></textarea>
+                                <button type="submit" class="btn btn-success w-full">Publicar Examen</button>
+                            </form>
+                        </div>
+                        <div class="card">
+                            <h4>Mis Exámenes Publicados</h4>
+                            <div class="mt-4">
+                                ${myExams.length ? myExams.map(e => `
+                                    <div class="list-item">
+                                        <div>
+                                            <strong>${e.title}</strong><br>
+                                            <span class="text-sm text-light">${e.subject}</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-danger" onclick="app.deleteExam(${e.id})"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                `).join('') : '<p class="text-sm">No has creado exámenes aún.</p>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+            createExam(e) {
+                e.preventDefault();
+                const exam = {
+                    id: Date.now(),
+                    title: document.getElementById('exam-title').value,
+                    subject: document.getElementById('exam-subject').value,
+                    questions: document.getElementById('exam-questions').value,
+                    creatorId: this.currentUser.id
+                };
+                this.state.exams.push(exam);
+                this.saveState();
+                this.notify("Examen publicado exitosamente", "success");
+                this.addNotification("Examen Creado", exam.title);
+                this.navigate('tutor_exams');
+            },
+            deleteExam(id) {
+                this.state.exams = this.state.exams.filter(e => e.id !== id);
+                this.saveState();
+                this.navigate('tutor_exams');
+            },
+
+            renderStudentDashboard(c) {
+                const tasksCompleted = this.state.tasks.filter(t => t.userId === this.currentUser.id && t.completed).length;
+                const tasksTotal = this.state.tasks.filter(t => t.userId === this.currentUser.id).length;
+                const lvl = Math.floor(this.currentUser.xp / 100) + 1;
+                const progress = (this.currentUser.xp % 100);
+
+                c.innerHTML = `
+                    <div class="fade-in grid grid-cols-3 mb-4">
+                        <div class="card stat-card"><div class="stat-icon bg-purple-light"><i class="fas fa-gamepad"></i></div><div><h3>Lvl ${lvl}</h3><p class="text-sm">${this.currentUser.xp} XP Puntos</p></div></div>
+                        <div class="card stat-card"><div class="stat-icon bg-green-light"><i class="fas fa-check-double"></i></div><div><h3>${tasksCompleted}/${tasksTotal}</h3><p class="text-sm">Tareas Completadas</p></div></div>
+                        <div class="card stat-card"><div class="stat-icon bg-orange-light"><i class="fas fa-file-alt"></i></div><div><h3>${this.state.exams.length}</h3><p class="text-sm">Quizzes Disponibles</p></div></div>
+                    </div>
+                    <div class="card mb-4">
+                        <h4>Progreso para el Siguiente Nivel</h4>
+                        <div style="background: var(--bg-light); border-radius: var(--radius-full); height: 20px; margin-top: 1rem; overflow: hidden;">
+                            <div style="width: ${progress}%; background: linear-gradient(90deg, #9333ea, var(--primary-blue)); height: 100%; transition: width 0.5s;"></div>
+                        </div>
+                        <p class="text-sm mt-2">Te faltan ${100 - progress} XP para alcanzar el Nivel ${lvl + 1}. ¡Completa tareas y quizzes para ganar XP!</p>
+                    </div>
+                `;
+            },
+
+            renderStudentExams(c) {
+                document.getElementById('current-view-title').textContent = "Resolver Quizzes";
+                c.innerHTML = `
+                    <div class="fade-in grid grid-cols-2">
+                        ${this.state.exams.map(e => `
+                            <div class="card">
+                                <h4>${e.title}</h4>
+                                <p class="text-sm mb-4">Materia: ${e.subject}</p>
+                                <button class="btn btn-primary w-full" onclick="app.takeExam(${e.id})"><i class="fas fa-play"></i> Iniciar Quiz</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+            takeExam(id) {
+                // Mock taking exam logic: grants XP instantly for demonstration
+                this.currentUser.xp += 50;
+                this.saveState();
+                this.notify("¡Quiz Completado! Ganaste 50 XP.", "success");
+                this.navigate('dashboard');
+            },
+
+            renderTasks(c) {
+                document.getElementById('current-view-title').textContent = "Gestor de Tareas Escolares";
+                const myTasks = this.state.tasks.filter(t => t.userId === this.currentUser.id);
+                
+                c.innerHTML = `
+                    <div class="card fade-in mb-4">
+                        <form onsubmit="app.addTask(event)" class="flex gap-2">
+                            <input type="text" id="task-input" placeholder="Nueva tarea..." required style="margin:0; flex: 2;">
+                            <button type="submit" class="btn btn-primary">Añadir</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        ${myTasks.length ? myTasks.map(t => `
+                            <div class="list-item ${t.completed ? 'completed' : ''}">
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="app.toggleTask(${t.id})" style="margin:0; width:auto;">
+                                    <span>${t.title}</span>
+                                </div>
+                                <button class="btn btn-sm btn-danger" onclick="app.deleteTask(${t.id})"><i class="fas fa-trash"></i></button>
+                            </div>
+                        `).join('') : '<p class="text-sm">No hay tareas pendientes.</p>'}
+                    </div>
+                `;
+            },
+            addTask(e) {
+                e.preventDefault();
+                const t = document.getElementById('task-input').value;
+                this.state.tasks.push({ id: Date.now(), title: t, completed: false, userId: this.currentUser.id });
+                this.saveState();
+                this.addNotification("Tarea Nueva", t);
+                this.navigate('tasks');
+            },
+            toggleTask(id) {
+                const t = this.state.tasks.find(x => x.id === id);
+                if(t) {
+                    t.completed = !t.completed;
+                    if(t.completed && this.currentUser.role === 'student') {
+                        this.currentUser.xp += 20; 
+                        this.notify("¡Tarea lista! +20 XP", "success");
+                    }
+                    this.saveState();
+                    this.navigate('tasks');
+                }
+            },
+            deleteTask(id) {
+                this.state.tasks = this.state.tasks.filter(t => t.id !== id);
+                this.saveState(); this.navigate('tasks');
+            },
+
+            renderCalendar(c) {
+                document.getElementById('current-view-title').textContent = "Agenda Inteligente";
+                const y = this.calendarDate.getFullYear(), m = this.calendarDate.getMonth();
+                const mNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+                const firstDay = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
+                const startDay = (firstDay === 0) ? 6 : firstDay - 1;
+
+                let html = '';
+                for(let i=0; i<startDay; i++) html += '<div class="calendar-day empty"></div>';
+                for(let d=1; d<=days; d++) {
+                    const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                    const isToday = new Date().toISOString().split('T')[0] === dateStr;
+                    const evs = this.state.events.filter(e => e.date === dateStr);
+                    html += `
+                        <div class="calendar-day ${isToday ? 'today' : ''}" onclick="app.openEventModal('${dateStr}')">
+                            <span class="day-number">${d}</span>
+                            ${evs.map(e => `<div class="event-pill">${e.title}</div>`).join('')}
+                        </div>
+                    `;
+                }
+
+                c.innerHTML = `
+                    <div class="calendar-card fade-in">
+                        <div class="calendar-nav">
+                            <button class="btn btn-outline btn-sm" onclick="app.changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                            <h3>${mNames[m]} ${y}</h3>
+                            <button class="btn btn-outline btn-sm" onclick="app.changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-grid">
+                            <div class="calendar-day-header">Lun</div><div class="calendar-day-header">Mar</div><div class="calendar-day-header">Mié</div>
+                            <div class="calendar-day-header">Jue</div><div class="calendar-day-header">Vie</div><div class="calendar-day-header">Sáb</div><div class="calendar-day-header">Dom</div>
+                            ${html}
+                        </div>
+                    </div>
+                `;
+            },
+            changeMonth(dir) { this.calendarDate.setMonth(this.calendarDate.getMonth() + dir); this.navigate('calendar'); },
+            openEventModal(date) {
+                document.getElementById('event-date-val').value = date;
+                document.getElementById('modal-event-date-lbl').textContent = date;
+                this.openModal('modal-event');
+            },
+            handleSaveEvent(e) {
+                e.preventDefault();
+                const ev = {
+                    id: Date.now(),
+                    date: document.getElementById('event-date-val').value,
+                    title: document.getElementById('event-title').value,
+                    type: document.getElementById('event-type').value
+                };
+                this.state.events.push(ev);
+                this.saveState();
+                this.closeModal('modal-event');
+                this.addNotification("Nuevo Evento", ev.title);
+                this.navigate('calendar');
+            },
+
+            renderChat(c) {
+                document.getElementById('current-view-title').textContent = "Tutor Virtual (IA)";
+                c.innerHTML = `
+                    <div class="chat-box fade-in">
+                        <div class="chat-header"><i class="fas fa-robot text-xl"></i> Tutor IA En línea</div>
+                        <div class="chat-messages" id="chat-body">
+                            ${this.state.messages.map(m => `
+                                <div class="chat-bubble ${m.sender === 'user' ? 'sent' : 'received'}">
+                                    ${m.text}
+                                    ${m.attachment ? `<br><a href="${m.attachment.data}" download="${m.attachment.name}" class="btn btn-sm btn-outline mt-2"><i class="fas fa-download"></i> ${m.attachment.name}</a>` : ''}
+                                    <div class="chat-time">${m.time}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="chat-input-bar">
+                            <input type="file" id="chat-file" class="hidden" onchange="app.attachFile(event)">
+                            <button class="btn btn-outline" onclick="document.getElementById('chat-file').click()"><i class="fas fa-paperclip"></i></button>
+                            <input type="text" id="chat-input" placeholder="Pregunta algo..." onkeypress="if(event.key==='Enter') app.sendMessage()" style="margin:0; flex:1;">
+                            <button class="btn btn-primary" onclick="app.sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                `;
+                setTimeout(() => document.getElementById('chat-body').scrollTop = 9999, 100);
+            },
+            sendMessage(textOverride, attachment) {
+                const text = textOverride || document.getElementById('chat-input')?.value.trim();
+                if (!text && !attachment) return;
+                
+                const msg = { sender: 'user', text: text || "Archivo enviado", time: new Date().toLocaleTimeString(), attachment };
+                this.state.messages.push(msg);
+                this.saveState();
+                if(!textOverride) document.getElementById('chat-input').value = '';
+                this.renderChat(document.getElementById('view-container'));
+
+                // Simulate AI
+                setTimeout(() => {
+                    const replies = ["¡Interesante! Cuéntame más.", "Te recomiendo repasar tus notas.", "Para matemáticas, recuerda la regla de los signos.", "Ese archivo se ve bien, lo revisaré."];
+                    const reply = replies[Math.floor(Math.random() * replies.length)];
+                    this.state.messages.push({ sender: 'bot', text: reply, time: new Date().toLocaleTimeString() });
+                    this.saveState();
+                    this.addNotification("Chat IA", "Tienes un nuevo mensaje");
+                    if (document.getElementById('chat-body')) this.renderChat(document.getElementById('view-container'));
+                }, 1000);
+            },
+            
+            attachFile(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // Límite de 1MB para evitar llenar el localStorage
+                if (file.size > 1024 * 1024) {
+                    this.notify("El archivo es demasiado grande. El límite máximo es 1MB.", "danger");
+                    e.target.value = ''; // Resetea el input
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    this.sendMessage(`Te envío: ${file.name}`, { name: file.name, data: ev.target.result });
+                    e.target.value = ''; // Resetea el input para poder subir el mismo archivo después
+                };
+                reader.readAsDataURL(file);
+            },
+
+            verifyPin() {
+                if(document.getElementById('pin-input').value === '1234') {
+                    this.closeModal('modal-pin');
+                    this.navigate('parental_unlocked');
+                } else this.notify("PIN incorrecto", "danger");
+                document.getElementById('pin-input').value = '';
+            },
+            renderParental(c) {
+                document.getElementById('current-view-title').textContent = "Control Parental Activo";
+                c.innerHTML = `
+                    <div class="card fade-in text-center">
+                        <h4>Generador de Reportes Oficiales</h4>
+                        <p class="text-sm mb-4">Descarga el rendimiento de XP y tareas completadas.</p>
+                        <button class="btn btn-primary" onclick="app.printReport()"><i class="fas fa-print"></i> Imprimir Reporte</button>
+                    </div>
+                `;
+            },
+            printReport() {
+                const p = document.getElementById('print-area');
+                p.innerHTML = `<h2>Reporte Académico Uply</h2><hr><br><p>Estudiante: ${this.currentUser.name}</p><p>XP Total: ${this.currentUser.xp}</p>`;
+                window.print();
+            },
+
+            // --- UTILS & NOTIFICATIONS ---
+            toggleNotifications() {
+                document.getElementById('notif-dropdown').classList.toggle('hidden');
+                document.getElementById('notif-badge').classList.add('hidden');
+                this.state.notifications.forEach(n => n.read = true);
+                this.saveState();
+            },
+            addNotification(title, text) {
+                this.state.notifications.unshift({ title, text, read: false });
+                this.saveState(); this.updateNotifBadge();
+            },
+            updateNotifBadge() {
+                const unread = this.state.notifications.filter(n => !n.read).length;
+                const b = document.getElementById('notif-badge');
+                if (unread > 0) { b.textContent = unread; b.classList.remove('hidden'); }
+                const list = document.getElementById('notif-list');
+                if (list) {
+                    list.innerHTML = this.state.notifications.map(n => `
+                        <div class="notif-item ${n.read ? '' : 'unread'}"><strong>${n.title}</strong><br>${n.text}</div>
+                    `).join('');
+                }
+            },
+            clearNotifications() { this.state.notifications = []; this.saveState(); this.updateNotifBadge(); },
+            
+            toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); },
+            toggleTheme() { 
+                document.body.classList.toggle('dark-theme');
+                document.getElementById('theme-icon').className = document.body.classList.contains('dark-theme') ? 'fas fa-sun' : 'fas fa-moon';
+            },
+            openModal(id) { document.getElementById(id).classList.add('active'); },
+            closeModal(id) { document.getElementById(id).classList.remove('active'); },
+            notify(msg, type="info") {
+                const t = document.createElement('div');
+                t.style.cssText = `position:fixed; bottom:20px; right:20px; background:${type==='danger'?'#ef4444':type==='success'?'#10b981':'#2563eb'}; color:white; padding:1rem; border-radius:8px; z-index:9999; animation:fadeIn 0.3s; box-shadow:var(--shadow-lg);`;
+                t.textContent = msg;
+                document.body.appendChild(t);
+                setTimeout(() => t.remove(), 3000);
+            },
+            handleSaveProfile(e) {
+                e.preventDefault();
+                this.currentUser.name = document.getElementById('edit-name').value;
+                this.currentUser.email = document.getElementById('edit-email').value;
+                const pw = document.getElementById('edit-password').value;
+                if(pw) this.currentUser.password = pw;
+                const userIndex = this.state.users.findIndex(u => u.id === this.currentUser.id);
+                this.state.users[userIndex] = this.currentUser;
+                this.saveState();
+                localStorage.setItem('uply_session', JSON.stringify(this.currentUser));
+                this.closeModal('modal-profile');
+                this.startApp();
+                this.notify("Perfil actualizado", "success");
+            }
+        };
+
+        window.onload = () => app.init();
+    </script>
 </body>
 </html>
